@@ -19,40 +19,40 @@ func NewOrderRepo(db *sqlx.DB) *orderRepo {
 	return &orderRepo{db: db}
 }
 
-func (r *orderRepo) Create(order pb.Order) (pb.Order, error) {
+func (r *orderRepo) Create(order pb.OrderReq) (pb.OrderResp, error) {
 	var orderId string
 	err := r.db.QueryRow(`
 		INSERT INTO orders (order_id, book_uuid, description)
 		VALUES ($1, $2, $3) returning order_id`, order.OrderId, order.BookId, order.Description).Scan(&orderId)
 	if err != nil {
-		return pb.Order{}, err
+		return pb.OrderResp{}, err
 	}
 
-	var NewOrder pb.Order
+	var NewOrder pb.OrderResp
 
 	NewOrder, err = r.Get(orderId)
 
 	if err != nil {
-		return pb.Order{}, err
+		return pb.OrderResp{}, err
 	}
 
 	return NewOrder, nil
 }
 
-func (r *orderRepo) Get(orderId string) (pb.Order, error) {
-	var order pb.Order
+func (r *orderRepo) Get(orderId string) (pb.OrderResp, error) {
+	var order pb.OrderResp
 
 	err := r.db.QueryRow(`
 		SELECT order_id, book_uuid, description, created_at, updated_at FROM orders WHERE deleted_at IS NULL AND order_id = $1`,
 		orderId).Scan(&order.OrderId, &order.BookId, &order.Description, &order.CreatedAt, &order.UpdatedAt)
 	if err != nil {
-		return pb.Order{}, err
+		return pb.OrderResp{}, err
 	}
 
 	return order, err
 }
 
-func (r *orderRepo) List(page, limit int64) ([]*pb.Order, int64, error) {
+func (r *orderRepo) List(page, limit int64) ([]*pb.OrderResp, int64, error) {
 	offset := (page - 1) * limit
 
 	rows, err := r.db.Queryx(`
@@ -66,11 +66,11 @@ func (r *orderRepo) List(page, limit int64) ([]*pb.Order, int64, error) {
 	defer rows.Close() // nolint:err check
 
 	var (
-		orders []*pb.Order
+		orders []*pb.OrderResp
 		count  int64
 	)
 	for rows.Next() {
-		var order pb.Order
+		var order pb.OrderResp
 		err = rows.Scan(&order.OrderId, &order.BookId, &order.Description, &order.CreatedAt, &order.UpdatedAt)
 		if err != nil {
 			return nil, 0, err
@@ -88,24 +88,24 @@ func (r *orderRepo) List(page, limit int64) ([]*pb.Order, int64, error) {
 	return orders, count, nil
 }
 
-func (r *orderRepo) Update(order pb.Order) (pb.Order, error) {
+func (r *orderRepo) Update(order pb.OrderReq) (pb.OrderResp, error) {
 	result, err := r.db.Exec(`UPDATE orders SET book_uuid=$1, description=$2, updated_at=$3 WHERE order_id=$4`, order.BookId, order.Description, time.Now().UTC(), order.OrderId)
 	if err != nil {
-		return pb.Order{}, err
+		return pb.OrderResp{}, err
 	}
 
 	if i, _ := result.RowsAffected(); i == 0 {
-		return pb.Order{}, sql.ErrNoRows
+		return pb.OrderResp{}, sql.ErrNoRows
 	}
 
-	var NewOrder pb.Order
+	var NewOrder pb.OrderResp
 
 	NewOrder, err = r.Get(order.OrderId)
 
 	fmt.Println(result, NewOrder)
 
 	if err != nil {
-		return pb.Order{}, err
+		return pb.OrderResp{}, err
 	}
 
 	return NewOrder, nil

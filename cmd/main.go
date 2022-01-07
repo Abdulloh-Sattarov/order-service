@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/abdullohsattorov/order-service/config"
@@ -8,6 +9,7 @@ import (
 	"github.com/abdullohsattorov/order-service/pkg/db"
 	"github.com/abdullohsattorov/order-service/pkg/logger"
 	"github.com/abdullohsattorov/order-service/service"
+	grpcClient "github.com/abdullohsattorov/order-service/service/grpc_client"
 	"github.com/abdullohsattorov/order-service/storage"
 
 	"google.golang.org/grpc"
@@ -35,9 +37,16 @@ func main() {
 		log.Fatal("sqlx connection to postgres error", logger.Error(err))
 	}
 
+	client, err := grpcClient.New(cfg)
+	if err != nil {
+		log.Fatal("grpc client connection error", logger.Error(err))
+	}
+
+	fmt.Println(client)
+
 	pgStorage := storage.NewStoragePg(connDB)
 
-	orderService := service.NewOrderService(pgStorage, log)
+	orderService := service.NewOrderService(pgStorage, log, client, &cfg)
 
 	lis, err := net.Listen("tcp", cfg.RPCPort)
 	if err != nil {

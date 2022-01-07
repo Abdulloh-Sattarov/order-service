@@ -6,9 +6,9 @@ import (
 
 // OrderStorageI ...
 type OrderStorageI interface {
-	Create(pb.Order) (pb.Order, error)
-	Get(id string) (pb.Order, error)
-	List(page, limit int64) ([]*pb.Order, int64, error)
-	Update(pb.Order) (pb.Order, error)
+	Create(pb.OrderReq) (pb.OrderResp, error)
+	Get(id string) (pb.OrderResp, error)
+	List(page, limit int64) ([]*pb.OrderResp, int64, error)
+	Update(pb.OrderReq) (pb.OrderResp, error)
 	Delete(id string) error
 }
