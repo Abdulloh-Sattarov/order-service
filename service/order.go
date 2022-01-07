@@ -62,7 +62,7 @@ func (s *OrderService) Create(ctxReq context.Context, req *pb.OrderReq) (*pb.Ord
 	catalogAuthor, err := s.client.CatalogService().GetAuthor(ctx, &c.ByIdReq{Id: catalogBook.AuthorId})
 	if err != nil {
 		s.logger.Error("failed while getting author", l.Error(err))
-		return &pb.OrderResp{}, status.Error(codes.Internal, "failedto while getting author")
+		return &pb.OrderResp{}, status.Error(codes.Internal, "failed to while getting author")
 	}
 
 	order.BookName = catalogBook.Name
