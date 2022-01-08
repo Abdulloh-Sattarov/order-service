@@ -33,8 +33,6 @@ func New(cfg config.Config) (IServiceManager, error) {
 		catalogService: pb.NewCatalogServiceClient(connCatalog),
 	}
 
-	fmt.Println(serviceManager)
-
 	return serviceManager, nil
 }
 

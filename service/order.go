@@ -127,6 +127,7 @@ func (s *OrderService) List(ctxReq context.Context, req *pb.ListReq) (*pb.ListRe
 
 		orders[i] = order
 	}
+
 	return &pb.ListResp{
 		Orders: orders,
 		Count:  count,

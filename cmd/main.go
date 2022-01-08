@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net"
 
 	"github.com/abdullohsattorov/order-service/config"
@@ -41,8 +40,6 @@ func main() {
 	if err != nil {
 		log.Fatal("grpc client connection error", logger.Error(err))
 	}
-
-	fmt.Println(client)
 
 	pgStorage := storage.NewStoragePg(connDB)
 
