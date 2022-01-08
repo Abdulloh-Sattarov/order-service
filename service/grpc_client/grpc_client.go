@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/abdullohsattorov/order-service/config"
 	pb "github.com/abdullohsattorov/order-service/genproto/catalog_service"
@@ -22,7 +23,7 @@ type serviceManager struct {
 
 // New ...
 func New(cfg config.Config) (IServiceManager, error) {
-	connCatalog, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.CatalogServiceHost, cfg.CatalogServicePort), grpc.WithInsecure())
+	connCatalog, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.CatalogServiceHost, cfg.CatalogServicePort), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, fmt.Errorf("catalog service dial host: %s port: %d", cfg.CatalogServiceHost, cfg.CatalogServicePort)
 	}
