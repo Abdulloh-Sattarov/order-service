@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -14,7 +13,7 @@ type orderRepo struct {
 	db *sqlx.DB
 }
 
-// New Repo
+// NewOrderRepo ...
 func NewOrderRepo(db *sqlx.DB) *orderRepo {
 	return &orderRepo{db: db}
 }
@@ -101,9 +100,6 @@ func (r *orderRepo) Update(order pb.OrderReq) (pb.OrderResp, error) {
 	var NewOrder pb.OrderResp
 
 	NewOrder, err = r.Get(order.OrderId)
-
-	fmt.Println(result, NewOrder)
-
 	if err != nil {
 		return pb.OrderResp{}, err
 	}
